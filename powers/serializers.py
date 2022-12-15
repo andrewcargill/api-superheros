@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import Profile
+from .models import Power
 
 
-class ProfileSerializer(serializers.ModelSerializer):
+class PowerSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     is_owner = serializers.SerializerMethodField()
 
@@ -12,8 +12,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         return request.user == obj.owner
 
     class Meta:
-        model = Profile
+        model = Power
         fields = [
-            'id', 'owner', 'created_at', 'updated_at', 'hero_name',
-            'bio', 'image', 'is_owner'
+            'id', 'owner', 'created_at', 'updated_at',
+            'speed', 'is_owner'
         ]
