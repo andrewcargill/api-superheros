@@ -15,5 +15,6 @@ class PowerSerializer(serializers.ModelSerializer):
         model = Power
         fields = [
             'id', 'owner', 'created_at', 'updated_at',
-            'speed', 'is_owner'
+            'speed', 'flight', 'strength', 'vision',
+            'fire', 'lasers', 'is_owner'
         ]
