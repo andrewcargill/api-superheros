@@ -37,7 +37,7 @@ class Power(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return self.content
+        return self.owner
 
 # creates powers when a new account is made 
 def create_power(sender, instance, created, **kwargs):
