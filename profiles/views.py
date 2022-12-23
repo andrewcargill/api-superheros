@@ -1,5 +1,5 @@
 from django.http import Http404
-from rest_framework import status
+from rest_framework import status, filters, generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Profile
@@ -7,45 +7,24 @@ from .serializers import ProfileSerializer
 from heros_api.permissions import IsOwnerOrReadOnly
 
 
-class ProfileList(APIView):
-    """
-    List all profiles
-    """
-    def get(self, request):
-        profiles = Profile.objects.all()
-        serializer = ProfileSerializer(
-            profiles, many=True, context={'request': request}
-        )
-        return Response(serializer.data)
+class ProfileList(generics.ListCreateAPIView):
+
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+    filter_backends = [
+        filters.SearchFilter
+    ]
+    search_fields = [
+        'owner__username'
+    ]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
-class ProfileDetail(APIView):
+class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+
     serializer_class = ProfileSerializer
     permission_classes = [IsOwnerOrReadOnly]
-
-    # returns profile
-    def get_object(self, pk):
-        try:
-            profile = Profile.objects.get(pk=pk)
-            self.check_object_permissions(self.request, profile)
-            return profile
-        except Profile.DoesNotExist:
-            raise Http404
-
-    # checks owner
-    def get(self, request, pk):
-        profile = self.get_object(pk)
-        serializer = ProfileSerializer(
-            profile, context={'request': request}
-        )
-        return Response(serializer.data)
-
-    def put(self, request, pk):
-        profile = self.get_object(pk)
-        serializer = ProfileSerializer(
-            profile, data=request.data, context={'request': request}
-        )
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    queryset = Profile.objects.all()
