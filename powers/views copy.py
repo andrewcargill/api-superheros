@@ -1,23 +1,20 @@
 from django.http import Http404
+from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework import status, generics, permissions
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from .models import Power
 from .serializers import PowerSerializer
 from heros_api.permissions import IsOwnerOrReadOnly
 
 
-class PowerList(generics.ListCreateAPIView):
+class PowerList(APIView):
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    serializer_class = PowerSerializer
-    queryset = Power.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['owner']
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    def get(self, request):
+        powers = Power.objects.all()
+        serializer = PowerSerializer(
+            powers, many=True, context={'request': request}
+        )
+        return Response(serializer.data)
 
 
 class PowerDetail(APIView):
