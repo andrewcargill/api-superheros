@@ -39,9 +39,10 @@ class Power(models.Model):
     def __str__(self):
         return self.owner
 
-# creates powers when a new account is made 
+
 def create_power(sender, instance, created, **kwargs):
     if created:
         Power.objects.create(owner=instance)
+
 
 post_save.connect(create_power, sender=User)

@@ -24,7 +24,6 @@ class PowerDetail(APIView):
     serializer_class = PowerSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
-    # returns profile
     def get_object(self, pk):
         try:
             power = Power.objects.get(pk=pk)
@@ -33,7 +32,6 @@ class PowerDetail(APIView):
         except Power.DoesNotExist:
             raise Http404
 
-    # checks owner
     def get(self, request, pk):
         power = self.get_object(pk)
         serializer = PowerSerializer(
@@ -50,4 +48,3 @@ class PowerDetail(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
